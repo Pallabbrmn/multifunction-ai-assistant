@@ -1,16 +1,11 @@
 import streamlit as st
 
-from src.config.settings import GROQ_API_KEY
+from src.ui.chat_page import render_chat_page
 
 st.set_page_config(
-    page_title="AI Multi-Function App",
+    page_title="AI Assistant",
     page_icon="🤖",
-    layout="wide"
+    layout="wide",
 )
 
-st.title("🤖 AI Multi-Function App")
-
-if GROQ_API_KEY:
-    st.success("Groq API Key Loaded Successfully")
-else:
-    st.warning("Groq API Key Not Found")
+render_chat_page()
