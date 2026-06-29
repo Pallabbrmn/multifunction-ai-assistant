@@ -2,25 +2,20 @@ from langchain_groq import ChatGroq
 
 from src.config.settings import (
     GROQ_API_KEY,
-    DEFAULT_MODEL,
+    GROQ_MODEL,
     TEMPERATURE,
 )
 
 
 class GroqProvider:
     """
-    Creates and manages a Groq LLM instance.
+    Factory class for creating Groq LLM instances.
     """
 
-    def __init__(self):
-        self.llm = ChatGroq(
+    @staticmethod
+    def get_llm():
+        return ChatGroq(
             api_key=GROQ_API_KEY,
-            model=DEFAULT_MODEL,
+            model=GROQ_MODEL,
             temperature=TEMPERATURE,
         )
-
-    def get_llm(self):
-        """
-        Returns the configured ChatGroq instance.
-        """
-        return self.llm
