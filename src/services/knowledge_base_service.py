@@ -1,6 +1,11 @@
 from pathlib import Path
 
 from src.rag.document_loader import DocumentLoader
+
+from src.ingestion.ingestion_service import (
+    IngestionService
+)
+
 from src.rag.text_splitter import TextSplitter
 from src.rag.embeddings import EmbeddingService
 from src.rag.vector_store import VectorStoreService
@@ -75,8 +80,8 @@ class KnowledgeBaseService:
             "Loading document..."
         )
 
-        documents = DocumentLoader.load_document(
-            str(pdf_path)
+        documents = IngestionService.ingest(
+            pdf_path
         )
 
         logger.info(

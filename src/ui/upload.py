@@ -13,8 +13,13 @@ def render_upload():
     )
 
     uploaded_file = st.file_uploader(
-        "Choose a PDF",
-        type=["pdf"],
+        "Upload File",
+        type=[
+            "pdf",
+            "png",
+            "jpg",
+            "jpeg",
+        ],
     )
 
     if uploaded_file:
