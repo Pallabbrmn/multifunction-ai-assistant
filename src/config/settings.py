@@ -1,16 +1,11 @@
-import streamlit as st
+from dotenv import load_dotenv
+import os
 
-from src.config.settings import GROQ_API_KEY
+load_dotenv()
 
-st.set_page_config(
-    page_title="AI Multi-Function App",
-    page_icon="🤖",
-    layout="wide"
-)
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-st.title("🤖 AI Multi-Function App")
-
-if GROQ_API_KEY:
-    st.success("Groq API Key Loaded Successfully")
-else:
-    st.warning("Groq API Key Not Found")
+DEFAULT_PROVIDER = os.getenv("DEFAULT_PROVIDER", "groq")
+DEFAULT_MODEL = os.getenv("DEFAULT_MODEL")
+TEMPERATURE = float(os.getenv("TEMPERATURE", 0.2))
