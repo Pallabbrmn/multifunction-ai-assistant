@@ -1,25 +1,51 @@
-from langchain_core.documents import Document
-
+from src.rag.models import RetrievedChunk
 from src.rag.vector_store import VectorStoreService
+from src.utils.logger import logger
 
 
 class RetrieverService:
-    """
-    Handles retrieval from the vector store.
-    """
 
     @staticmethod
     def retrieve(
         query: str,
         k: int = 4,
-    ) -> list[Document]:
+        min_score: float | None = None,
+    ) -> list[RetrievedChunk]:
 
         vector_store = VectorStoreService.load_vector_store()
 
-        retriever = vector_store.as_retriever(
-            search_kwargs={
-                "k": k
-            }
+        results = vector_store.similarity_search_with_score(
+            query=query,
+            k=k,
         )
 
-        return retriever.invoke(query)
+        logger.info(
+            "Searching for: %s",
+            query
+        )
+
+        retrieved = []
+
+        for document, score in results:
+
+            if (
+                min_score is not None
+                and score > min_score
+            ):
+                continue
+
+            retrieved.append(
+
+                RetrievedChunk(
+                    document=document,
+                    score=float(score),
+                )
+
+            )
+
+        logger.info(
+            "Retrieved %d chunks",
+            len(retrieved)
+        )
+
+        return retrieved

@@ -1,6 +1,7 @@
 import logging
 import os
 
+
 LOG_DIR = "logs"
 
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -15,6 +16,8 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+
+logger = logging.getLogger(__name__)
 
 
 def get_logger(name: str):

@@ -1,58 +1,54 @@
 from langchain_core.output_parsers import StrOutputParser
 
 from src.llms.llm_factory import LLMFactory
+from src.prompts.rag_prompt import get_rag_prompt
+
 from src.rag.retriever import RetrieverService
+from src.rag.context_manager import ContextManager
+from src.rag.context_builder import ContextBuilder
 
-from langchain_core.prompts import ChatPromptTemplate
+from src.rag.models import RAGResponse
 
-RAG_PROMPT = ChatPromptTemplate.from_template(
-    """
-You are a helpful AI assistant.
-
-Answer the user's question ONLY using the context below.
-
-If the answer is not contained in the context,
-say:
-
-"I couldn't find that information in the provided documents."
-
-Context:
-{context}
-
-Question:
-{question}
-"""
-)
 
 class RAGService:
-    """
-    Coordinates retrieval and generation.
-    """
 
     @staticmethod
     def ask(
         question: str,
         provider: str | None = None,
     ) -> str:
-        
-        documents = RetrieverService.retrieve(question)
 
-        context = "\n\n".join(
-            document.page_content
-            for document in documents
+        retrieved_chunks = RetrieverService.retrieve(
+            question
+        )
+
+        prepared_chunks = ContextManager.prepare(
+            retrieved_chunks,
+            max_chunks=4,
+            max_characters=6000,
+        )
+
+        context = ContextBuilder.build(
+            prepared_chunks,
+            include_scores=False,
         )
 
         llm = LLMFactory.get_llm(provider)
 
         chain = (
-            RAG_PROMPT | llm | StrOutputParser()
+            get_rag_prompt()
+            | llm
+            | StrOutputParser()
         )
 
-        response = chain.invoke(
+        answer = chain.invoke(
             {
                 "context": context,
                 "question": question,
             }
         )
 
-        return response
+        return RAGResponse(
+            answer=answer,
+            sources=prepared_chunks,
+        )

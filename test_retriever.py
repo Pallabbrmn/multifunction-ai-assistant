@@ -1,12 +1,15 @@
 from src.rag.retriever import RetrieverService
 
-documents = RetrieverService.retrieve(
-    "What are my Leave policies?"
+results = RetrieverService.retrieve(
+    "What are the Leave policies?"
 )
 
-print(f"Retrieved {len(documents)} documents")
+for chunk in results:
 
-for index, document in enumerate(documents, start=1):
-    print("-" * 50)
-    print(f"Chunk {index}")
-    print(document.page_content)
+    print("=" * 60)
+
+    print("Score:", chunk.score)
+
+    print("Metadata:", chunk.metadata)
+
+    print(chunk.content)
