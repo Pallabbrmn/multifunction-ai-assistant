@@ -16,11 +16,19 @@ class RAGService:
     def ask(
         question: str,
         provider: str | None = None,
-    ) -> str:
+    ) -> RAGResponse:
 
         retrieved_chunks = RetrieverService.retrieve(
             question
         )
+
+        print("=" * 80)
+        print(f"Retrieved {len(retrieved_chunks)} chunks")
+
+        for chunk in retrieved_chunks:
+            print(chunk.score)
+            print(chunk.document.page_content[:200])
+            print("-" * 50)
 
         prepared_chunks = ContextManager.prepare(
             retrieved_chunks,

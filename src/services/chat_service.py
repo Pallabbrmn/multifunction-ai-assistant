@@ -1,6 +1,7 @@
 from src.llms.llm_factory import LLMFactory
 from src.models.chat_models import ChatResponse
 from src.utils.logger import get_logger
+from src.rag.rag_service import RAGService
 
 logger = get_logger(__name__)
 
@@ -15,8 +16,6 @@ class ChatService:
 
         if not message.strip():
 
-            logger.warning("Empty message received")
-
             return ChatResponse(
                 success=False,
                 message="Message cannot be empty.",
@@ -25,28 +24,23 @@ class ChatService:
 
         try:
 
-            logger.info("Getting LLM instance")
-
-            llm = LLMFactory.get_llm(provider)
-
-            logger.info("Invoking LLM")
-
-            response = llm.invoke(message)
-
-            logger.info("Response generated successfully")
+            rag_response = RAGService.ask(
+                question=message,
+                provider=provider,
+            )
 
             return ChatResponse(
                 success=True,
-                message=response.content,
+                message=rag_response.answer,
                 provider=provider or "default",
             )
 
         except Exception as e:
 
-            logger.exception("Error while generating response")
+            logger.exception(e)
 
             return ChatResponse(
                 success=False,
-                message="Unable to generate response.",
+                message=str(e),
                 provider=provider or "default",
             )

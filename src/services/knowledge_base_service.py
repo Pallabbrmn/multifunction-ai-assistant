@@ -50,27 +50,27 @@ class KnowledgeBaseService:
         # Use existing vector store if available
         # -------------------------------------------------
 
-        if (
-            not force_rebuild
-            and VectorStoreService.index_exists()
-        ):
-            logger.info(
-                "Existing FAISS index found."
-            )
+        # if (
+        #     not force_rebuild
+        #     and VectorStoreService.index_exists()
+        # ):
+        #     logger.info(
+        #         "Existing FAISS index found."
+        #     )
 
-            logger.info(
-                "Loading cached vector store..."
-            )
+        #     logger.info(
+        #         "Loading cached vector store..."
+        #     )
 
-            vector_store = (
-                VectorStoreService.load_vector_store()
-            )
+        #     vector_store = (
+        #         VectorStoreService.load_vector_store()
+        #     )
 
-            logger.info(
-                "Knowledge Base Loaded Successfully."
-            )
+        #     logger.info(
+        #         "Knowledge Base Loaded Successfully."
+        #     )
 
-            return vector_store
+        #     return vector_store
 
         # -------------------------------------------------
         # Load PDF
@@ -83,6 +83,11 @@ class KnowledgeBaseService:
         documents = IngestionService.ingest(
             pdf_path
         )
+
+        print("=" * 80)
+        print(f"Loaded {len(documents)} documents")
+        print(documents[0].page_content[:500])
+        print("=" * 80)
 
         logger.info(
             "Loaded %d pages.",
@@ -101,6 +106,12 @@ class KnowledgeBaseService:
             documents
         )
 
+        print(len(chunks))
+
+        for chunk in chunks[:3]:
+            print("=" * 40)
+            print(chunk.page_content)
+
         logger.info(
             "Created %d chunks.",
             len(chunks),
@@ -114,9 +125,9 @@ class KnowledgeBaseService:
             "Loading embedding model..."
         )
 
-        embeddings = (
-            EmbeddingService.get_embeddings()
-        )
+        # embeddings = (
+        #     EmbeddingService.get_embeddings()
+        # )
 
         # -------------------------------------------------
         # Build vector store
@@ -129,9 +140,11 @@ class KnowledgeBaseService:
         vector_store = (
             VectorStoreService.create_vector_store(
                 documents=chunks,
-                embeddings=embeddings,
+                # embeddings=embeddings,
             )
         )
+
+        print(vector_store.index.ntotal)
 
         # -------------------------------------------------
         # Save vector store
