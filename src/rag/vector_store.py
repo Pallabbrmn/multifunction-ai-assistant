@@ -15,6 +15,35 @@ class VectorStoreService:
     """
 
     @staticmethod
+    def add_documents(
+        vector_store: FAISS,
+        documents: list[Document],
+    ) -> FAISS:
+        """
+        Add new documents to an existing vector store.
+        """
+
+        if not documents:
+            logger.warning(
+                "No documents supplied to add."
+            )
+            return vector_store
+
+        logger.info(
+            "Adding %d new chunks...",
+            len(documents),
+        )
+
+        vector_store.add_documents(documents)
+
+        logger.info(
+            "Vector store now contains %d vectors.",
+            vector_store.index.ntotal,
+        )
+
+        return vector_store
+
+    @staticmethod
     def create_vector_store(
         documents: list[Document],
     ) -> FAISS:

@@ -1,0 +1,54 @@
+from langchain_core.output_parsers import JsonOutputParser
+
+from src.agents.models import ToolDecision
+from src.agents.tool_registry import ToolRegistry
+
+from src.llms.llm_factory import LLMFactory
+
+from src.prompts.agent_prompt import (
+    get_planner_prompt,
+)
+
+
+class Planner:
+    """
+    Uses the LLM to decide which tool
+    should handle the user's request.
+    """
+
+    @staticmethod
+    def plan(
+        question: str,
+        provider: str | None = None,
+    ) -> ToolDecision:
+
+        llm = LLMFactory.get_llm(provider)
+
+        parser = JsonOutputParser(
+            pydantic_object=ToolDecision
+        )
+
+        prompt = (
+            get_planner_prompt()
+            .partial(
+                format_instructions=
+                parser.get_format_instructions()
+            )
+        )
+
+        chain = (
+            prompt
+            | llm
+            | parser
+        )
+
+        result = chain.invoke(
+            {
+                "tools": ", ".join(
+                    ToolRegistry.list_tools()
+                ),
+                "question": question,
+            }
+        )
+
+        return ToolDecision(**result)

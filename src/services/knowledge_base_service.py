@@ -19,6 +19,8 @@ class KnowledgeBaseService:
     from uploaded PDF documents.
     """
 
+    
+
     @staticmethod
     def build(
         pdf_path: str,
@@ -34,6 +36,20 @@ class KnowledgeBaseService:
         Returns:
             FAISS vector store.
         """
+
+        from src.services.metadata_service import (
+            MetadataService
+        )
+
+        if MetadataService.already_indexed(
+            pdf_path
+        ):
+
+            logger.info(
+                "Document already indexed."
+            )
+
+            return VectorStoreService.load_vector_store()
 
         pdf_path = Path(pdf_path)
 
@@ -137,12 +153,36 @@ class KnowledgeBaseService:
             "Creating FAISS vector store..."
         )
 
-        vector_store = (
-            VectorStoreService.create_vector_store(
-                documents=chunks,
-                # embeddings=embeddings,
+        if VectorStoreService.index_exists():
+
+            logger.info(
+                "Loading existing vector store..."
             )
-        )
+
+            vector_store = (
+                VectorStoreService.load_vector_store()
+            )
+
+            logger.info(
+                "Adding new documents..."
+            )
+
+            VectorStoreService.add_documents(
+                vector_store,
+                chunks,
+            )
+
+        else:
+
+            logger.info(
+                "Creating new vector store..."
+            )
+
+            vector_store = (
+                VectorStoreService.create_vector_store(
+                    chunks
+                )
+            )
 
         print(vector_store.index.ntotal)
 
@@ -154,12 +194,25 @@ class KnowledgeBaseService:
             "Saving FAISS vector store..."
         )
 
+        logger.info(
+            "Knowledge Base Size : %d",
+            vector_store.index.ntotal,
+        )
+
         VectorStoreService.save_vector_store(
             vector_store
         )
 
         logger.info(
             "Knowledge Base Built Successfully."
+        )
+
+        MetadataService.add_file(
+            pdf_path
+        )
+
+        logger.info(
+            "Metadata updated."
         )
 
         logger.info("=" * 60)

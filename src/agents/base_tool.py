@@ -4,18 +4,15 @@ from typing import Any
 
 class BaseTool(ABC):
     """
-    Base interface for every agent tool.
+    Base class for every tool that an AI agent can use.
     """
 
     name: str
     description: str
 
     @abstractmethod
-    def run(
-        self,
-        **kwargs: Any,
-    ) -> Any:
+    def run(self, **kwargs: Any) -> Any:
         """
         Execute the tool.
         """
-        pass
+        raise NotImplementedError
