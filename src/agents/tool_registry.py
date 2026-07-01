@@ -1,42 +1,78 @@
-from src.agents.base_tool import BaseTool
+from src.tools.chat_tool import ChatTool
+from src.tools.rag_tool import RAGTool
 
 
 class ToolRegistry:
     """
-    Stores every tool that the AI Agent can use.
+    Central registry for all AI tools.
     """
 
-    _tools: dict[str, BaseTool] = {}
-
-    @classmethod
-    def register(
-        cls,
-        tool: BaseTool,
-    ) -> None:
-
-        cls._tools[
-            tool.name
-        ] = tool
+    _tools = {
+        "chat": ChatTool(),
+        "rag": RAGTool(),
+    }
 
     @classmethod
     def get_tool(
         cls,
-        name: str,
-    ) -> BaseTool:
+        tool_name: str,
+    ):
+        """
+        Return a tool instance by name.
+        """
 
-        if name not in cls._tools:
-
-            raise ValueError(
-                f"Tool '{name}' not found."
-            )
-
-        return cls._tools[name]
+        return cls._tools.get(
+            tool_name.lower()
+        )
 
     @classmethod
-    def list_tools(
-        cls,
-    ) -> list[str]:
+    def list_tools(cls):
+        """
+        Return all registered tool names.
+        """
 
-        return list(
-            cls._tools.keys()
-        )
+        return list(cls._tools.keys())
+
+    @classmethod
+    def get_tool_descriptions(cls):
+        """
+        Return tool names and descriptions
+        for the Planner prompt.
+        """
+
+        description = []
+
+        for tool in cls._tools.values():
+
+            description.append(
+
+                f"""
+Tool: {tool.name}
+
+Description:
+{tool.description}
+"""
+
+            )
+
+        return "\n".join(description)
+
+    @classmethod
+    def execute(
+        cls,
+        tool_name: str,
+        question: str,
+    ):
+        """
+        Execute a registered tool.
+        """
+
+        tool = cls.get_tool(tool_name)
+
+        if tool is None:
+
+            raise ValueError(
+                f"Unknown tool: {tool_name}"
+            )
+
+        return tool.execute(question)

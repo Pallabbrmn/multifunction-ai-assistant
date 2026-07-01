@@ -4,6 +4,7 @@ from src.tools.rag_tool import RAGTool
 from src.tools.ocr_tool import OCRTool
 from src.tools.calculator_tool import CalculatorTool
 from src.tools.summarizer_tool import SummarizerTool
+from src.tools.chat_tool import ChatTool
 
 
 def register_tools():
@@ -24,6 +25,6 @@ def register_tools():
         SummarizerTool()
     )
 
-    # ToolRegistry.register(
-    #     ChatTool()
-    # )
+    ToolRegistry.register(
+        ChatTool()
+    )

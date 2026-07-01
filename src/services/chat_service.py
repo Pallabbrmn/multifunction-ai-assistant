@@ -1,7 +1,6 @@
 from src.llms.llm_factory import LLMFactory
 from src.models.chat_models import ChatResponse
 from src.utils.logger import get_logger
-from src.rag.rag_service import RAGService
 
 logger = get_logger(__name__)
 
@@ -24,14 +23,13 @@ class ChatService:
 
         try:
 
-            rag_response = RAGService.ask(
-                question=message,
-                provider=provider,
-            )
+            llm = LLMFactory.get_llm(provider)
+
+            response = llm.invoke(message)
 
             return ChatResponse(
                 success=True,
-                message=rag_response.answer,
+                message=response.content,
                 provider=provider or "default",
             )
 

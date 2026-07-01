@@ -1,30 +1,24 @@
-from typing import Any
-
 from src.agents.base_tool import BaseTool
+
 from src.rag.rag_service import RAGService
 
 
 class RAGTool(BaseTool):
-    """
-    Tool for querying the knowledge base.
-    """
 
     name = "rag"
 
-    description = (
-        "Searches the uploaded knowledge base "
-        "and answers questions using retrieved context."
-    )
+    description = """
+Use this tool whenever the question
+is about uploaded files,
+PDFs,
+images,
+knowledge base,
+or stored documents.
+"""
 
-    def run(self, **kwargs: Any) -> str:
+    def execute(
+        self,
+        question: str,
+    ):
 
-        question = kwargs.get("question")
-
-        if not question:
-            raise ValueError(
-                "Question is required."
-            )
-
-        response = RAGService.ask(question)
-
-        return response.answer
+        return RAGService.ask(question)

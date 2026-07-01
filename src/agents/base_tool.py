@@ -1,18 +1,22 @@
 from abc import ABC, abstractmethod
-from typing import Any
 
 
 class BaseTool(ABC):
     """
-    Base class for every tool that an AI agent can use.
+    Base class for every tool
+    available to the AI Agent.
     """
 
-    name: str
-    description: str
+    name: str = ""
+
+    description: str = ""
 
     @abstractmethod
-    def run(self, **kwargs: Any) -> Any:
+    def execute(
+        self,
+        question: str,
+    ):
         """
         Execute the tool.
         """
-        raise NotImplementedError
+        pass

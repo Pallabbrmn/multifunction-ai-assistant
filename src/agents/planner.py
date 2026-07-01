@@ -9,6 +9,10 @@ from src.prompts.agent_prompt import (
     get_planner_prompt,
 )
 
+from src.agents.planning_context import (
+    PlanningContext,
+)
+
 
 class Planner:
     """
@@ -42,13 +46,22 @@ class Planner:
             | parser
         )
 
-        result = chain.invoke(
+        context = PlanningContext.build()
+
+        return chain.invoke(
             {
-                "tools": ", ".join(
-                    ToolRegistry.list_tools()
-                ),
-                "question": question,
+                "tools":
+                context["tools"],
+
+                "knowledge_base_loaded":
+                context["knowledge_base_loaded"],
+
+                "document_count":
+                context["document_count"],
+
+                "question":
+                question,
             }
         )
 
-        return ToolDecision(**result)
+        # return ToolDecision(**result)

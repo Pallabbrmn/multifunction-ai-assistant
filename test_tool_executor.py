@@ -1,12 +1,8 @@
-from src.agents.register_tools import register_tools
-from src.agents.tool_executor import ToolExecutor
+from src.tools.chat_tool import ChatTool
+from src.tools.rag_tool import RAGTool
 
+print(ChatTool().name)
+print(ChatTool().description)
 
-register_tools()
-
-answer = ToolExecutor.execute(
-    "rag",
-    question="What is total spend on TURFXCIMMUNITY?"
-)
-
-print(answer)
+print(RAGTool().name)
+print(RAGTool().description)
